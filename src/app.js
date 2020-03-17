@@ -11,7 +11,7 @@ import Home from './components/Home'
 import Game from './components/Game'
 
 const App = () => (
-  <BrowserRouter basename="/">
+  <BrowserRouter basename="/React-Connect4">
     {/* <Navbar /> */}
     <Switch>
       <Route exact path="/" component={Home} />
