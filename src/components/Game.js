@@ -6,16 +6,17 @@ import { Button, Col, Row } from 'react-bootstrap'
 
 const Game = () => {
 
-  const grid = []
+  // const grid = []
   let player1turn = true
 
   const [playerTurnText, setText] = useState(false)
+  const [winner, setWinner] = useState('')
+  const [grid, setGrid] = useState([])
 
-  
+
   useEffect(() => {
     const gameBoard = document.getElementsByClassName('gameBoard')[0]
-    const playerTurn = document.querySelector('.player')
-    console.log(gameBoard)
+    // console.log(gameBoard)
     createGameBoard(gameBoard)
     startGame()
   }, [0])
@@ -32,32 +33,29 @@ const Game = () => {
       }
       grid.push(createRow)
     }
-    console.log(grid)
+    // console.log(grid)
   }
 
   function startGame() {
-    console.log(grid[0][0])
     for (let y = 0; y < 7; y++) {
       for (let x = 0; x < 6; x++) {
         grid[y][x].addEventListener('click', () => {
           let canAdd = false
-          console.log('clicked', grid[y][x])
+          // console.log('clicked', grid[y][x])
           if (grid[6].includes(grid[y][x])) {
             canAdd = true
-            console.log('bottom')
           } else if (grid[y + 1][x].classList.contains('blue') || grid[y + 1][x].classList.contains('red')) {
             canAdd = true
           }
           if (canAdd) {
-            console.log('yes')
-            addCounter(grid[y][x], x)
+            addCounter(grid[y][x], y, x)
           }
         })
       }
     }
   }
 
-  function addCounter(cell, i) {
+  function addCounter(cell, y, x) {
     let color = 'blue'
     if (player1turn) {
       cell.classList.add('blue')
@@ -70,9 +68,148 @@ const Game = () => {
       color = 'red'
       player1turn = true
     }
-    // checkCounters(cell, i, color)
+    checkCounters(cell, color, y, x)
   }
 
+  function checkCounters(cell, color, y, x) {
+    let rowCount = 0
+    let columnCount = 0
+
+
+    for (let y = 0; y < 7; y++) {
+      for (let x = 0; x < 5; x++) {
+        //check rows:
+        if (grid[y][x].classList.contains(color) && grid[y][x + 1].classList.contains(color)) {
+          rowCount++
+          // console.log(rowCount)
+          checkCount(rowCount)
+        } else {
+          rowCount = 0
+        }
+      }
+    }
+    //find way to combine top loop and bottom
+    for (let x = 0; x < 6; x++) {
+      for (let y = 0; y < 6; y++) {
+        //check columns 
+        if (grid[y][x].classList.contains(color) && grid[y + 1][x].classList.contains(color)) {
+          columnCount++
+          checkCount(columnCount)
+        } else {
+          columnCount = 0
+        }
+      }
+    }
+
+    //diagonals
+    let diaCount = 0
+
+    // BL
+    for (let i = 1; i <= 3; i++) {
+      if (grid[6].includes(cell) || checkLeftColumn(cell)) {
+        console.log('not allowed')
+      } else if ((x - i >= 0 && y + i < 7) && checkNextPosition(y + i, x - i, color)) {
+        diaCount++
+        console.log(diaCount)
+        checkCount(diaCount)
+      }
+    }
+
+    // TR
+    for (let i = 1; i <= 3; i++) {
+      if (grid[0].includes(cell) || checkRightColumn(cell)) {
+        console.log('not allowed')
+      } else if ((x + i <= 5 && y - i >= 0) && checkNextPosition(y - i, x + i, color)) {
+        diaCount++
+        console.log('dia', diaCount)
+        checkCount(diaCount)
+      }
+    }
+
+    // BR
+    for (let i = 1; i <= 3; i++) {
+      if (grid[6].includes(cell) || checkRightColumn(cell)) {
+        console.log('not allowed')
+      } else if ((x + i <= 5 && y + i < 7) && checkNextPosition(y + i, x + i, color)) {
+        diaCount++
+        console.log('dia2', diaCount)
+        checkCount(diaCount)
+      }
+    }
+
+    // TL
+    for (let i = 1; i <= 3; i++) {
+      if (grid[0].includes(cell) || checkLeftColumn(cell)) {
+        console.log('not allowed')
+      } else if ((x - i >= 0 && y - i >= 0) && checkNextPosition(y - i, x - i, color)) {
+        diaCount++
+        console.log('dia3', diaCount)
+        checkCount(diaCount)
+      }
+    }
+
+
+  }
+
+  function checkNextPosition(y, x, color) {
+    // console.log(y, x)
+    // console.log(grid[y][x])
+    if (grid[y][x].classList.contains(color)) {
+      console.log('true')
+      return true
+    } else {
+      return false
+    }
+  }
+
+
+
+  function checkRightColumn(cell) {
+    for (let i = 0; i < grid.length; i++) {
+      if (grid[i][5] === cell) {
+        // console.log('yes')
+        return true
+      }
+    }
+    return false
+  }
+
+  function checkLeftColumn(cell) {
+    for (let i = 0; i < grid.length; i++) {
+      if (grid[i][0] === cell) {
+        // console.log('yes')
+        return true
+      }
+    }
+    return false
+  }
+
+
+  function checkCount(count) {
+    if (count >= 3) {
+      console.log('win')
+      setWinner(player1turn ? 'Player Two! (red)' : 'Player One! (blue)')
+      // setTimeout(() => {
+      //   for (let y = 0; y < 7; y++) {
+      //     for (let x = 0; x < 6; x++) {
+      //       grid[y][x].classList.remove('red')
+      //       grid[y][x].classList.remove('blue')
+      //     }
+      //   }
+      //   setWinner('')
+      // }, 1500)
+    }
+  }
+
+  function replay() {
+    for (let y = 0; y < 7; y++) {
+      for (let x = 0; x < 6; x++) {
+        grid[y][x].classList.remove('red')
+        grid[y][x].classList.remove('blue')
+      }
+    }
+    setWinner('')
+  }
 
 
 
@@ -83,8 +220,9 @@ const Game = () => {
         <h3 className='player'>{playerTurnText ? playerTurnText : 'Turn: Player One'}</h3>
       </header>
       <main>
-        {/* <section className='gameBoard'></section> */}
+        <div>WINNER: {winner}</div>
         <section className='gameBoard'></section>
+        <Button onClick={() => replay()}>Restart</Button>
       </main>
     </div>
   )
@@ -93,3 +231,19 @@ const Game = () => {
 }
 
 export default Game
+
+
+
+
+// // check diagonals:
+// for (let y = 6; y >= 4; y--) {
+//   if (y === 6)
+//     for (let x = 0; x < 3; x++) {
+//       for (let up = 0; up < 5 - x; up++) {
+//         if (grid[6 - up][x + up].classList.contains(color) && grid[(6 - up) - 1][x + 1].classList.contains(color)) {
+//           // console.log(grid[6 - up][x + up])
+//           // console.log(grid[(6 - up) - 1][x + 1])
+//         }
+//       }
+//     }
+// 
