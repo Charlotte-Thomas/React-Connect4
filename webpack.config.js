@@ -8,8 +8,8 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.resolve('dist'),
-    // publicPath: '/React-Connect4'  //---previous code that didn't work for development
-    publicPath: '/' // use for development
+    publicPath: '/React-Connect4'  //---previous code that didn't work for development
+    // publicPath: '/' // use for development
   },
   module: {
     rules: [
