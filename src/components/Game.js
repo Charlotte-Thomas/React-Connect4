@@ -16,7 +16,6 @@ const Game = () => {
 
   useEffect(() => {
     const gameBoard = document.getElementsByClassName('gameBoard')[0]
-    // console.log(gameBoard)
     createGameBoard(gameBoard)
     startGame()
   }, [0])
@@ -59,12 +58,12 @@ const Game = () => {
     let color = 'blue'
     if (player1turn) {
       cell.classList.add('blue')
-      setText('Turn: Player Two')
+      setText('Player Two')
       color = 'blue'
       player1turn = false
     } else {
       cell.classList.add('red')
-      setText('Turn: Player One')
+      setText('Player One')
       color = 'red'
       player1turn = true
     }
@@ -102,52 +101,44 @@ const Game = () => {
     }
 
     //diagonals
-    let diaCount = 0
+    let rightDiaCount = 0
+    let leftDiaCount = 0
 
     // BL
     for (let i = 1; i <= 3; i++) {
-      if (grid[6].includes(cell) || checkLeftColumn(cell)) {
-        console.log('not allowed')
-      } else if ((x - i >= 0 && y + i < 7) && checkNextPosition(y + i, x - i, color)) {
-        diaCount++
-        console.log(diaCount)
-        checkCount(diaCount)
+      if ((x - i >= 0 && y + i < 7) && checkNextPosition(y + i, x - i, color)) {
+        rightDiaCount++
+        console.log(rightDiaCount)
+        checkCount(rightDiaCount)
       }
     }
 
     // TR
     for (let i = 1; i <= 3; i++) {
-      if (grid[0].includes(cell) || checkRightColumn(cell)) {
-        console.log('not allowed')
-      } else if ((x + i <= 5 && y - i >= 0) && checkNextPosition(y - i, x + i, color)) {
-        diaCount++
-        console.log('dia', diaCount)
-        checkCount(diaCount)
+      if ((x + i <= 5 && y - i >= 0) && checkNextPosition(y - i, x + i, color)) {
+        rightDiaCount++
+        console.log('dia', rightDiaCount)
+        checkCount(rightDiaCount)
       }
     }
 
     // BR
     for (let i = 1; i <= 3; i++) {
-      if (grid[6].includes(cell) || checkRightColumn(cell)) {
-        console.log('not allowed')
-      } else if ((x + i <= 5 && y + i < 7) && checkNextPosition(y + i, x + i, color)) {
-        diaCount++
-        console.log('dia2', diaCount)
-        checkCount(diaCount)
+      if ((x + i <= 5 && y + i < 7) && checkNextPosition(y + i, x + i, color)) {
+        leftDiaCount++
+        console.log('dia2', leftDiaCount)
+        checkCount(leftDiaCount)
       }
     }
 
     // TL
     for (let i = 1; i <= 3; i++) {
-      if (grid[0].includes(cell) || checkLeftColumn(cell)) {
-        console.log('not allowed')
-      } else if ((x - i >= 0 && y - i >= 0) && checkNextPosition(y - i, x - i, color)) {
-        diaCount++
-        console.log('dia3', diaCount)
-        checkCount(diaCount)
+      if ((x - i >= 0 && y - i >= 0) && checkNextPosition(y - i, x - i, color)) {
+        leftDiaCount++
+        console.log('dia3', leftDiaCount)
+        checkCount(leftDiaCount)
       }
     }
-
 
   }
 
@@ -162,42 +153,10 @@ const Game = () => {
     }
   }
 
-
-
-  function checkRightColumn(cell) {
-    for (let i = 0; i < grid.length; i++) {
-      if (grid[i][5] === cell) {
-        // console.log('yes')
-        return true
-      }
-    }
-    return false
-  }
-
-  function checkLeftColumn(cell) {
-    for (let i = 0; i < grid.length; i++) {
-      if (grid[i][0] === cell) {
-        // console.log('yes')
-        return true
-      }
-    }
-    return false
-  }
-
-
   function checkCount(count) {
     if (count >= 3) {
       console.log('win')
-      setWinner(player1turn ? 'Player Two! (red)' : 'Player One! (blue)')
-      // setTimeout(() => {
-      //   for (let y = 0; y < 7; y++) {
-      //     for (let x = 0; x < 6; x++) {
-      //       grid[y][x].classList.remove('red')
-      //       grid[y][x].classList.remove('blue')
-      //     }
-      //   }
-      //   setWinner('')
-      // }, 1500)
+      setWinner(player1turn ? 'Player Two! - blue' : 'Player One! - green')
     }
   }
 
@@ -216,13 +175,16 @@ const Game = () => {
   return (
     <div className='gamePage'>
       <header>
-        <h1>Connect 4</h1>
-        <h3 className='player'>{playerTurnText ? playerTurnText : 'Turn: Player One'}</h3>
+        <h1 className='gamePageTitle'>Connect 4</h1>
+        <h3 className='player'><span className='font-weight-bold'>Turn: </span>{playerTurnText ? playerTurnText : 'Player One'}</h3>
       </header>
       <main>
-        <div>WINNER: {winner}</div>
+        <div className='winner'>WINNER: {winner}</div>
         <section className='gameBoard'></section>
-        <Button onClick={() => replay()}>Restart</Button>
+        <div className="buttons">
+          <Button className='restartButton btn-secondary btn-outline-secondary' aria-pressed="false" onClick={() => replay()}>Restart</Button>
+          <Button className='restartButton btn-secondary btn-outline-secondary' aria-pressed="false"><Link className='link' to='/'>Instructions</Link></Button>
+        </div>
       </main>
     </div>
   )
@@ -235,7 +197,7 @@ export default Game
 
 
 
-// // check diagonals:
+// // check diagonals old code:
 // for (let y = 6; y >= 4; y--) {
 //   if (y === 6)
 //     for (let x = 0; x < 3; x++) {
@@ -247,3 +209,30 @@ export default Game
 //       }
 //     }
 // 
+
+// if (grid[6].includes(cell) || checkLeftColumn(cell)) {
+//   console.log('not allowed')
+// }
+
+
+
+
+// function checkRightColumn(cell) {
+//   for (let i = 0; i < grid.length; i++) {
+//     if (grid[i][5] === cell) {
+//       // console.log('yes')
+//       return true
+//     }
+//   }
+//   return false
+// }
+
+// function checkLeftColumn(cell) {
+//   for (let i = 0; i < grid.length; i++) {
+//     if (grid[i][0] === cell) {
+//       // console.log('yes')
+//       return true
+//     }
+//   }
+//   return false
+// }
